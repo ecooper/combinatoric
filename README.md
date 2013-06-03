@@ -1,4 +1,4 @@
-combinatoric
+Combinatoric
 ============
 
-Go port of the combinatoric bits from python's itertools
+Combinatoric is a simple Go port of the "combinatoric" parts of python's itertools.
