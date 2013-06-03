@@ -5,18 +5,17 @@ import (
 )
 
 type PermutationIterator struct {
-	pool       []interface{}
-	r          int
-	cycles     []int
-	indices    []int
-	total      int64
-	iterations int64
+	pool      []interface{}
+	r         int
+	cycles    []int
+	indices   []int
+	completed int
 }
 
 func (this *PermutationIterator) Next() []interface{} {
 	n := len(this.pool)
 
-	if this.iterations > 0 {
+	if this.completed > -1 {
 		for i := this.r - 1; i > -1; i-- {
 			this.cycles[i] = this.cycles[i] - 1
 			if this.cycles[i] == 0 {
@@ -30,9 +29,12 @@ func (this *PermutationIterator) Next() []interface{} {
 				x := this.indices[i]
 				this.indices[i] = this.indices[n-this.cycles[i]]
 				this.indices[n-this.cycles[i]] = x
+				this.completed += i
 				break
 			}
 		}
+	} else {
+		this.completed = 0
 	}
 
 	permutation := this.EmptyPermutation()
@@ -40,12 +42,11 @@ func (this *PermutationIterator) Next() []interface{} {
 		permutation[i] = this.pool[this.indices[i]]
 	}
 
-	this.iterations++
 	return permutation
 }
 
 func (this *PermutationIterator) HasNext() bool {
-	return this.iterations < this.total
+	return this.completed < len(this.pool)-this.r*this.r
 }
 
 func (this *PermutationIterator) EmptyPermutation() []interface{} {
@@ -54,15 +55,13 @@ func (this *PermutationIterator) EmptyPermutation() []interface{} {
 
 func (this *PermutationIterator) Reset() {
 	n := len(this.pool)
-	this.total = TotalPermutations(n, this.r).Int64()
-	this.iterations = 0
 
 	this.indices = make([]int, n)
 	for i := range this.indices {
 		this.indices[i] = i
 	}
 
-	this.cycles = make([]int, n-this.r)
+	this.cycles = make([]int, n+1-this.r)
 	for i := range this.cycles {
 		this.cycles[i] = n - i
 	}

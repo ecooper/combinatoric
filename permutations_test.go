@@ -31,6 +31,22 @@ func TestPermutations(t *testing.T) {
 		e [][]interface{}
 	}{
 		{
+			[]interface{}{"A", "B", "C"},
+			2,
+			[][]interface{}{
+				{"c"},
+				{"B"},
+				{"A"},
+			},
+		},
+		{
+			[]interface{}{"A", "B", "C", "D"},
+			4,
+			[][]interface{}{
+				{"A", "B", "C", "D"},
+			},
+		},
+		{
 			[]interface{}{"A", "B", "C", "D"},
 			2,
 			[][]interface{}{
@@ -48,6 +64,72 @@ func TestPermutations(t *testing.T) {
 				{"D", "C"},
 			},
 		},
+		{
+			[]interface{}{"A", "B", "C", "D", "E"},
+			3,
+			[][]interface{}{
+				{"A", "B", "C"},
+				{"A", "B", "D"},
+				{"A", "B", "E"},
+				{"A", "C", "B"},
+				{"A", "C", "D"},
+				{"A", "C", "E"},
+				{"A", "D", "B"},
+				{"A", "D", "C"},
+				{"A", "D", "E"},
+				{"A", "E", "B"},
+				{"A", "E", "C"},
+				{"A", "E", "D"},
+				{"B", "A", "C"},
+				{"B", "A", "D"},
+				{"B", "A", "E"},
+				{"B", "C", "A"},
+				{"B", "C", "D"},
+				{"B", "C", "E"},
+				{"B", "D", "A"},
+				{"B", "D", "C"},
+				{"B", "D", "E"},
+				{"B", "E", "A"},
+				{"B", "E", "C"},
+				{"B", "E", "D"},
+				{"C", "A", "B"},
+				{"C", "A", "D"},
+				{"C", "A", "E"},
+				{"C", "B", "A"},
+				{"C", "B", "D"},
+				{"C", "B", "E"},
+				{"C", "D", "A"},
+				{"C", "D", "B"},
+				{"C", "D", "E"},
+				{"C", "E", "A"},
+				{"C", "E", "B"},
+				{"C", "E", "D"},
+				{"D", "A", "B"},
+				{"D", "A", "C"},
+				{"D", "A", "E"},
+				{"D", "B", "A"},
+				{"D", "B", "C"},
+				{"D", "B", "E"},
+				{"D", "C", "A"},
+				{"D", "C", "B"},
+				{"D", "C", "E"},
+				{"D", "E", "A"},
+				{"D", "E", "B"},
+				{"D", "E", "C"},
+				{"E", "A", "B"},
+				{"E", "A", "C"},
+				{"E", "A", "D"},
+				{"E", "B", "A"},
+				{"E", "B", "C"},
+				{"E", "B", "D"},
+				{"E", "C", "A"},
+				{"E", "C", "B"},
+				{"E", "C", "D"},
+				{"E", "D", "A"},
+				{"E", "D", "B"},
+				{"E", "D", "C"},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -57,6 +139,19 @@ func TestPermutations(t *testing.T) {
 			if fmt.Sprint(p) != fmt.Sprint(test.e[i]) {
 				t.Errorf("Got unexpected permutations, %v at %v. Expected %v", p, i, test.e[i])
 			}
+		}
+	}
+}
+
+func BenchmarkPermutation(b *testing.B) {
+	pool := []interface{}{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"}
+	r := 2
+	results := make([][]interface{}, TotalPermutations(len(pool), r).Int64())
+
+	for i := 0; i < b.N; i++ {
+		permutations := Permutations(pool, r)
+		for c := 0; permutations.HasNext(); c++ {
+			results[c] = permutations.Next()
 		}
 	}
 }
