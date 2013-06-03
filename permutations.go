@@ -1,7 +1,6 @@
 package combinatoric
 
 import (
-	"log"
 	"math/big"
 )
 
@@ -18,7 +17,6 @@ func (this *PermutationIterator) Next() []interface{} {
 	n := len(this.pool)
 
 	if this.iterations > 0 {
-		log.Print(this.cycles, this.indices)
 		for i := this.r - 1; i > -1; i-- {
 			this.cycles[i] = this.cycles[i] - 1
 			if this.cycles[i] == 0 {
