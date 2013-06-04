@@ -13,28 +13,36 @@ func factorial(x *big.Int) *big.Int {
 }
 
 type CombinationIterator struct {
-	pool    []interface{}
-	r       int
-	indices []int
-	last    int
+	pool      []interface{}
+	r         int
+	indices   []int
+	completed int
+	total     int
 }
 
 func (this *CombinationIterator) Next() []interface{} {
-	combination := this.EmptyCombination()
-	if this.last < 0 {
-		this.last = 0
-		for i := 0; i < this.r; i++ {
-			combination[i] = this.pool[i]
+	if this.completed > 0 {
+		i := this.r - 1
+		for ; i > -1; i-- {
+			if this.indices[i] != i+len(this.pool)-this.r {
+				break
+			}
+		}
+		if i > -1 {
+			this.indices[i] += 1
+			for j := i + 1; j < this.r; j++ {
+				this.indices[j] = this.indices[j-1] + 1
+			}
+
+			this.completed += 1
 		}
 	} else {
-		this.indices[this.last] = this.indices[this.last] + 1
-		for j := this.last + 1; j < this.r; j++ {
-			this.indices[j] = this.indices[j-1] + 1
-		}
+		this.completed = 1
+	}
 
-		for j := 0; j < this.r; j++ {
-			combination[j] = this.pool[this.indices[j]]
-		}
+	combination := this.EmptyCombination()
+	for j := 0; j < this.r; j++ {
+		combination[j] = this.pool[this.indices[j]]
 	}
 
 	return combination
@@ -45,18 +53,7 @@ func (this *CombinationIterator) HasNext() bool {
 		return false
 	}
 
-	if this.last == -1 {
-		return true
-	}
-
-	for i := this.r - 1; i > -1; i-- {
-		this.last = i
-		if this.indices[i] != this.last+len(this.pool)-this.r {
-			return true
-		}
-	}
-
-	return false
+	return this.completed < this.total
 }
 
 func (this *CombinationIterator) EmptyCombination() []interface{} {
@@ -64,7 +61,14 @@ func (this *CombinationIterator) EmptyCombination() []interface{} {
 }
 
 func (this *CombinationIterator) Reset() {
-	this.last = -1
+	n := len(this.pool)
+	z := n - this.r + 1
+	if this.r == 1 {
+		z--
+	}
+	this.total = (n * z) / 2
+	this.completed = -1
+
 	this.indices = make([]int, this.r)
 	for i := 0; i < this.r; i++ {
 		this.indices[i] = i

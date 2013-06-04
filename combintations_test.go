@@ -59,15 +59,95 @@ func TestCombinations(t *testing.T) {
 				{"C", "D"},
 			},
 		},
+		{
+			[]interface{}{"A", "B", "C", "D", "E"},
+			4,
+			[][]interface{}{
+				{"A", "B", "C", "D"},
+				{"A", "B", "C", "E"},
+				{"A", "B", "D", "E"},
+				{"A", "C", "D", "E"},
+				{"B", "C", "D", "E"},
+			},
+		},
+		{
+			[]interface{}{"A", "B", "C"},
+			1,
+			[][]interface{}{
+				{"A"},
+				{"B"},
+				{"C"},
+			},
+		},
+		{
+			[]interface{}{"A", "B", "C", "D", "E", "F", "G", "H", "I"},
+			2,
+			[][]interface{}{
+				{"A", "B"},
+				{"A", "C"},
+				{"A", "D"},
+				{"A", "E"},
+				{"A", "F"},
+				{"A", "G"},
+				{"A", "H"},
+				{"A", "I"},
+				{"B", "C"},
+				{"B", "D"},
+				{"B", "E"},
+				{"B", "F"},
+				{"B", "G"},
+				{"B", "H"},
+				{"B", "I"},
+				{"C", "D"},
+				{"C", "E"},
+				{"C", "F"},
+				{"C", "G"},
+				{"C", "H"},
+				{"C", "I"},
+				{"D", "E"},
+				{"D", "F"},
+				{"D", "G"},
+				{"D", "H"},
+				{"D", "I"},
+				{"E", "F"},
+				{"E", "G"},
+				{"E", "H"},
+				{"E", "I"},
+				{"F", "G"},
+				{"F", "H"},
+				{"F", "I"},
+				{"G", "H"},
+				{"G", "I"},
+				{"H", "I"},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		combinations := Combinations(test.v, test.r)
-		for i := 0; combinations.HasNext(); i++ {
+		i := 0
+		for ; combinations.HasNext(); i++ {
 			c := combinations.Next()
 			if fmt.Sprint(c) != fmt.Sprint(test.e[i]) {
-				t.Errorf("Got unexpected combination, %v at %v. Expected %v", c, i, test.e)
+				t.Errorf("Got unexpected combination, %v at %v. Expected %v", c, i, test.e[i])
 			}
+		}
+
+		if int(len(test.e)) != int(i) {
+			t.Errorf("Not enough combinations: %s, expected %s", i, len(test.e))
+		}
+	}
+}
+
+func BenchmarkCombination(b *testing.B) {
+	pool := []interface{}{"A", "B", "C", "D", "E"}
+	r := 2
+	results := make([][]interface{}, TotalCombinations(len(pool), r).Int64())
+
+	for i := 0; i < b.N; i++ {
+		combinations := Combinations(pool, r)
+		for c := 0; combinations.HasNext(); c++ {
+			results[c] = combinations.Next()
 		}
 	}
 }

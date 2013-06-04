@@ -52,3 +52,19 @@ func TestProduct(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkProduct(b *testing.B) {
+	pools := [][]interface{}{
+		{"A", "B", "C"},
+		{"A", "B"},
+		{"A"},
+	}
+	results := make([][]interface{}, TotalProduct(3, 2, 1).Int64())
+
+	for i := 0; i < b.N; i++ {
+		product := Product(pools)
+		for c := 0; product.HasNext(); c++ {
+			results[c] = product.Next()
+		}
+	}
+}

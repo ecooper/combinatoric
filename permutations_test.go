@@ -32,11 +32,11 @@ func TestPermutations(t *testing.T) {
 	}{
 		{
 			[]interface{}{"A", "B", "C"},
-			2,
+			1,
 			[][]interface{}{
-				{"c"},
-				{"B"},
 				{"A"},
+				{"B"},
+				{"C"},
 			},
 		},
 		{
@@ -134,17 +134,22 @@ func TestPermutations(t *testing.T) {
 
 	for _, test := range tests {
 		permutations := Permutations(test.v, test.r)
-		for i := 0; permutations.HasNext(); i++ {
+		i := 0
+		for ; permutations.HasNext(); i++ {
 			p := permutations.Next()
 			if fmt.Sprint(p) != fmt.Sprint(test.e[i]) {
 				t.Errorf("Got unexpected permutations, %v at %v. Expected %v", p, i, test.e[i])
 			}
 		}
+
+		if int(len(test.e)) != int(i) {
+			t.Errorf("Not enough combinations: %s, expected %s", i, len(test.e))
+		}
 	}
 }
 
 func BenchmarkPermutation(b *testing.B) {
-	pool := []interface{}{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"}
+	pool := []interface{}{"A", "B", "C", "D", "E"}
 	r := 2
 	results := make([][]interface{}, TotalPermutations(len(pool), r).Int64())
 

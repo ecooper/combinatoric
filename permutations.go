@@ -5,21 +5,21 @@ import (
 )
 
 type PermutationIterator struct {
-	pool      []interface{}
-	r         int
-	cycles    []int
-	indices   []int
-	completed int
+	pool    []interface{}
+	r       int
+	cycles  []int
+	indices []int
+	started bool
 }
 
 func (this *PermutationIterator) Next() []interface{} {
 	n := len(this.pool)
 
-	if this.completed > -1 {
+	if this.started == true {
 		for i := this.r - 1; i > -1; i-- {
-			this.cycles[i] = this.cycles[i] - 1
+			this.cycles[i] -= 1
 			if this.cycles[i] == 0 {
-				for x := i; x < len(this.indices)-1; x++ {
+				for x := i; x < n-1; x++ {
 					v := this.indices[x]
 					this.indices[x] = this.indices[x+1]
 					this.indices[x+1] = v
@@ -29,12 +29,11 @@ func (this *PermutationIterator) Next() []interface{} {
 				x := this.indices[i]
 				this.indices[i] = this.indices[n-this.cycles[i]]
 				this.indices[n-this.cycles[i]] = x
-				this.completed += i
 				break
 			}
 		}
 	} else {
-		this.completed = 0
+		this.started = true
 	}
 
 	permutation := this.EmptyPermutation()
@@ -46,7 +45,19 @@ func (this *PermutationIterator) Next() []interface{} {
 }
 
 func (this *PermutationIterator) HasNext() bool {
-	return this.completed < len(this.pool)-this.r*this.r
+	if len(this.pool) == this.r && this.started {
+		return false
+	}
+
+	if this.cycles[0] != 1 {
+		return true
+	}
+
+	cf := 0
+	for i := range this.cycles {
+		cf += this.cycles[i]
+	}
+	return cf > this.r
 }
 
 func (this *PermutationIterator) EmptyPermutation() []interface{} {
@@ -55,13 +66,14 @@ func (this *PermutationIterator) EmptyPermutation() []interface{} {
 
 func (this *PermutationIterator) Reset() {
 	n := len(this.pool)
+	this.started = false
 
 	this.indices = make([]int, n)
 	for i := range this.indices {
 		this.indices[i] = i
 	}
 
-	this.cycles = make([]int, n+1-this.r)
+	this.cycles = make([]int, n-(n-this.r))
 	for i := range this.cycles {
 		this.cycles[i] = n - i
 	}
