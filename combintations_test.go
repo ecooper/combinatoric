@@ -48,6 +48,14 @@ func TestCombinations(t *testing.T) {
 		e [][]interface{}
 	}{
 		{
+			[]interface{}{"A", "B"},
+			1,
+			[][]interface{}{
+				{"A"},
+				{"B"},
+			},
+		},
+		{
 			[]interface{}{"A", "B", "C", "D"},
 			2,
 			[][]interface{}{
@@ -77,6 +85,17 @@ func TestCombinations(t *testing.T) {
 				{"A"},
 				{"B"},
 				{"C"},
+			},
+		},
+		{
+			[]interface{}{"A", "B", "C", "D", "E"},
+			1,
+			[][]interface{}{
+				{"A"},
+				{"B"},
+				{"C"},
+				{"D"},
+				{"E"},
 			},
 		},
 		{

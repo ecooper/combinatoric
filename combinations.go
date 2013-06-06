@@ -62,11 +62,13 @@ func (this *CombinationIterator) EmptyCombination() []interface{} {
 
 func (this *CombinationIterator) Reset() {
 	n := len(this.pool)
-	z := n - this.r + 1
-	if this.r == 1 {
-		z--
+	if this.r > 1 {
+		z := n - this.r + 1
+		this.total = (n * z) / 2
+	} else {
+		this.total = n
 	}
-	this.total = (n * z) / 2
+
 	this.completed = -1
 
 	this.indices = make([]int, this.r)
