@@ -62,7 +62,9 @@ func (this *CombinationIterator) EmptyCombination() []interface{} {
 
 func (this *CombinationIterator) Reset() {
 	n := len(this.pool)
-	if this.r > 1 {
+	if this.r == n {
+		this.total = 1
+	} else if this.r > 1 {
 		z := n - this.r + 1
 		this.total = (n * z) / 2
 	} else {

@@ -68,6 +68,13 @@ func TestCombinations(t *testing.T) {
 			},
 		},
 		{
+			[]interface{}{"A", "B", "C", "D"},
+			4,
+			[][]interface{}{
+				{"A", "B", "C", "D"},
+			},
+		},
+		{
 			[]interface{}{"A", "B", "C", "D", "E"},
 			4,
 			[][]interface{}{
