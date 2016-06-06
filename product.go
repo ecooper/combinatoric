@@ -12,57 +12,57 @@ type ProductIterator struct {
 	iterations int64
 }
 
-func (this *ProductIterator) Next() []interface{} {
-	product := this.EmptyProduct()
-	copy(product, this.current)
+func (iter *ProductIterator) Next() []interface{} {
+	product := iter.EmptyProduct()
+	copy(product, iter.current)
 
-	if this.iterations == 0 {
+	if iter.iterations == 0 {
 		for i := range product {
-			product[i] = this.pools[i][0]
+			product[i] = iter.pools[i][0]
 		}
 	} else {
 		for i := len(product) - 1; i >= 0; i-- {
-			pool := this.pools[i]
-			this.indices[i] += 1
-			if this.indices[i] == len(pool) {
-				this.indices[i] = 0
+			pool := iter.pools[i]
+			iter.indices[i] += 1
+			if iter.indices[i] == len(pool) {
+				iter.indices[i] = 0
 				product[i] = pool[0]
 			} else {
-				product[i] = pool[this.indices[i]]
+				product[i] = pool[iter.indices[i]]
 				break
 			}
 		}
 	}
 
-	this.current = product
-	this.iterations++
+	iter.current = product
+	iter.iterations++
 	return product
 }
 
-func (this *ProductIterator) HasNext() bool {
-	return this.iterations < this.total
+func (iter *ProductIterator) HasNext() bool {
+	return iter.iterations < iter.total
 }
 
-func (this *ProductIterator) EmptyProduct() []interface{} {
-	return make([]interface{}, len(this.pools))
+func (iter *ProductIterator) EmptyProduct() []interface{} {
+	return make([]interface{}, len(iter.pools))
 }
 
-func (this *ProductIterator) Total() *big.Int {
-	sizes := make([]int, len(this.pools))
+func (iter *ProductIterator) Total() *big.Int {
+	sizes := make([]int, len(iter.pools))
 	for i := range sizes {
-		sizes[i] = len(this.pools[i])
+		sizes[i] = len(iter.pools[i])
 	}
 
 	return TotalProduct(sizes...)
 }
 
-func (this *ProductIterator) Reset() {
-	this.iterations = 0
-	this.total = this.Total().Int64()
+func (iter *ProductIterator) Reset() {
+	iter.iterations = 0
+	iter.total = iter.Total().Int64()
 
-	n := len(this.pools)
-	this.indices = make([]int, n)
-	this.current = make([]interface{}, n)
+	n := len(iter.pools)
+	iter.indices = make([]int, n)
+	iter.current = make([]interface{}, n)
 }
 
 func TotalProduct(pools ...int) *big.Int {

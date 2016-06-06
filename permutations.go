@@ -12,70 +12,70 @@ type PermutationIterator struct {
 	started bool
 }
 
-func (this *PermutationIterator) Next() []interface{} {
-	n := len(this.pool)
+func (iter *PermutationIterator) Next() []interface{} {
+	n := len(iter.pool)
 
-	if this.started == true {
-		for i := this.r - 1; i > -1; i-- {
-			this.cycles[i] -= 1
-			if this.cycles[i] == 0 {
+	if iter.started == true {
+		for i := iter.r - 1; i > -1; i-- {
+			iter.cycles[i] -= 1
+			if iter.cycles[i] == 0 {
 				for x := i; x < n-1; x++ {
-					v := this.indices[x]
-					this.indices[x] = this.indices[x+1]
-					this.indices[x+1] = v
+					v := iter.indices[x]
+					iter.indices[x] = iter.indices[x+1]
+					iter.indices[x+1] = v
 				}
-				this.cycles[i] = n - i
+				iter.cycles[i] = n - i
 			} else {
-				x := this.indices[i]
-				this.indices[i] = this.indices[n-this.cycles[i]]
-				this.indices[n-this.cycles[i]] = x
+				x := iter.indices[i]
+				iter.indices[i] = iter.indices[n-iter.cycles[i]]
+				iter.indices[n-iter.cycles[i]] = x
 				break
 			}
 		}
 	} else {
-		this.started = true
+		iter.started = true
 	}
 
-	permutation := this.EmptyPermutation()
-	for i := 0; i < this.r; i++ {
-		permutation[i] = this.pool[this.indices[i]]
+	permutation := iter.EmptyPermutation()
+	for i := 0; i < iter.r; i++ {
+		permutation[i] = iter.pool[iter.indices[i]]
 	}
 
 	return permutation
 }
 
-func (this *PermutationIterator) HasNext() bool {
-	if len(this.pool) == this.r && this.started {
+func (iter *PermutationIterator) HasNext() bool {
+	if len(iter.pool) == iter.r && iter.started {
 		return false
 	}
 
-	if this.cycles[0] != 1 {
+	if iter.cycles[0] != 1 {
 		return true
 	}
 
 	cf := 0
-	for i := range this.cycles {
-		cf += this.cycles[i]
+	for i := range iter.cycles {
+		cf += iter.cycles[i]
 	}
-	return cf > this.r
+	return cf > iter.r
 }
 
-func (this *PermutationIterator) EmptyPermutation() []interface{} {
-	return make([]interface{}, this.r)
+func (iter *PermutationIterator) EmptyPermutation() []interface{} {
+	return make([]interface{}, iter.r)
 }
 
-func (this *PermutationIterator) Reset() {
-	n := len(this.pool)
-	this.started = false
+func (iter *PermutationIterator) Reset() {
+	n := len(iter.pool)
+	iter.started = false
 
-	this.indices = make([]int, n)
-	for i := range this.indices {
-		this.indices[i] = i
+	iter.indices = make([]int, n)
+	for i := range iter.indices {
+		iter.indices[i] = i
 	}
 
-	this.cycles = make([]int, n-(n-this.r))
-	for i := range this.cycles {
-		this.cycles[i] = n - i
+	iter.cycles = make([]int, n-(n-iter.r))
+	for i := range iter.cycles {
+		iter.cycles[i] = n - i
 	}
 }
 

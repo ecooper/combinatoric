@@ -20,62 +20,62 @@ type CombinationIterator struct {
 	total     int
 }
 
-func (this *CombinationIterator) Next() []interface{} {
-	if this.completed > 0 {
-		i := this.r - 1
+func (iter *CombinationIterator) Next() []interface{} {
+	if iter.completed > 0 {
+		i := iter.r - 1
 		for ; i > -1; i-- {
-			if this.indices[i] != i+len(this.pool)-this.r {
+			if iter.indices[i] != i+len(iter.pool)-iter.r {
 				break
 			}
 		}
 		if i > -1 {
-			this.indices[i] += 1
-			for j := i + 1; j < this.r; j++ {
-				this.indices[j] = this.indices[j-1] + 1
+			iter.indices[i] += 1
+			for j := i + 1; j < iter.r; j++ {
+				iter.indices[j] = iter.indices[j-1] + 1
 			}
 
-			this.completed += 1
+			iter.completed += 1
 		}
 	} else {
-		this.completed = 1
+		iter.completed = 1
 	}
 
-	combination := this.EmptyCombination()
-	for j := 0; j < this.r; j++ {
-		combination[j] = this.pool[this.indices[j]]
+	combination := iter.EmptyCombination()
+	for j := 0; j < iter.r; j++ {
+		combination[j] = iter.pool[iter.indices[j]]
 	}
 
 	return combination
 }
 
-func (this *CombinationIterator) HasNext() bool {
-	if this.r > len(this.pool) {
+func (iter *CombinationIterator) HasNext() bool {
+	if iter.r > len(iter.pool) {
 		return false
 	}
 
-	return this.completed < this.total
+	return iter.completed < iter.total
 }
 
-func (this *CombinationIterator) EmptyCombination() []interface{} {
-	return make([]interface{}, this.r)
+func (iter *CombinationIterator) EmptyCombination() []interface{} {
+	return make([]interface{}, iter.r)
 }
 
-func (this *CombinationIterator) Reset() {
-	n := len(this.pool)
-	if this.r == n {
-		this.total = 1
-	} else if this.r > 1 {
-		z := n - this.r + 1
-		this.total = (n * z) / 2
+func (iter *CombinationIterator) Reset() {
+	n := len(iter.pool)
+	if iter.r == n {
+		iter.total = 1
+	} else if iter.r > 1 {
+		z := n - iter.r + 1
+		iter.total = (n * z) / 2
 	} else {
-		this.total = n
+		iter.total = n
 	}
 
-	this.completed = -1
+	iter.completed = -1
 
-	this.indices = make([]int, this.r)
-	for i := 0; i < this.r; i++ {
-		this.indices[i] = i
+	iter.indices = make([]int, iter.r)
+	for i := 0; i < iter.r; i++ {
+		iter.indices[i] = i
 	}
 
 }
