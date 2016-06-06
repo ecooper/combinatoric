@@ -57,6 +57,7 @@ func (iter *PermutationIterator) HasNext() bool {
 	for i := range iter.cycles {
 		cf += iter.cycles[i]
 	}
+
 	return cf > iter.r
 }
 
@@ -89,20 +90,20 @@ func Permutations(pool []interface{}, r int) *PermutationIterator {
 	return permutations
 }
 
-func TotalPermutations(n int, r int) (total *big.Int) {
-	total = new(big.Int)
-	d := new(big.Int)
+func TotalPermutations(n int, r int) *big.Int {
 	n64 := int64(n)
 	r64 := int64(r)
 
 	if n < r {
-		total.SetInt64(0)
-		return
+		return big.NewInt(0)
 	}
 
-	d.Set(factorial(big.NewInt(n64 - r64)))
-	total.Set(factorial(big.NewInt(n64)))
-	total.Div(total, d)
+	total := big.NewInt(0)
 
-	return
+	total.Div(
+		factorial(big.NewInt(n64)),
+		factorial(big.NewInt(n64-r64)),
+	)
+
+	return total
 }

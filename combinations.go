@@ -4,14 +4,6 @@ import (
 	"math/big"
 )
 
-func factorial(x *big.Int) *big.Int {
-	n := big.NewInt(1)
-	if x.Cmp(big.NewInt(0)) == 0 {
-		return n
-	}
-	return n.Mul(x, factorial(n.Sub(x, n)))
-}
-
 type CombinationIterator struct {
 	pool      []interface{}
 	r         int
@@ -80,24 +72,24 @@ func (iter *CombinationIterator) Reset() {
 
 }
 
-func TotalCombinations(n int, r int) (total *big.Int) {
-	total = new(big.Int)
-	d := new(big.Int)
+func TotalCombinations(n int, r int) *big.Int {
 	n64 := int64(n)
 	r64 := int64(r)
 
 	if n < r {
-		total.SetInt64(0)
-		return
+		return big.NewInt(0)
 	}
 
-	d.Set(factorial(big.NewInt(n64 - r64)))
-	d.Mul(d, factorial(big.NewInt(r64)))
+	total := big.NewInt(0)
 
-	total.Set(factorial(big.NewInt(n64)))
-	total.Div(total, d)
+	total.Mul(
+		factorial(big.NewInt(n64-r64)),
+		factorial(big.NewInt(r64)),
+	)
 
-	return
+	total.Div(factorial(big.NewInt(n64)), total)
+
+	return total
 }
 
 func Combinations(pool []interface{}, r int) *CombinationIterator {
