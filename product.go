@@ -15,7 +15,16 @@ type ProductIterator struct {
 	res []interface{}
 }
 
+func (iter *ProductIterator) First() []interface{} {
+	iter.Reset()
+	return iter.Next()
+}
+
 func (iter *ProductIterator) Next() []interface{} {
+	if !iter.HasNext() {
+		return nil
+	}
+
 	if iter.res[0] == nil {
 		for i := range iter.res {
 			iter.res[i] = iter.pools[i][0]

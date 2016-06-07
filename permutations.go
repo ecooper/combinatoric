@@ -17,6 +17,11 @@ type PermutationIterator struct {
 	res []interface{}
 }
 
+func (iter *PermutationIterator) First() []interface{} {
+	iter.Reset()
+	return iter.Next()
+}
+
 func (iter *PermutationIterator) Next() []interface{} {
 	if iter.res[0] != nil {
 		for i := iter.r - 1; i > -1; i-- {

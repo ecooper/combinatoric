@@ -5,8 +5,9 @@ import (
 )
 
 type Iterator interface {
-	HasNext() bool
+	First() []interface{}
 	Next() []interface{}
+	HasNext() bool
 	Len() uint64
 	Reset()
 }

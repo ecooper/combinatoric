@@ -16,7 +16,16 @@ type CombinationIterator struct {
 	res []interface{}
 }
 
+func (iter *CombinationIterator) First() []interface{} {
+	iter.Reset()
+	return iter.Next()
+}
+
 func (iter *CombinationIterator) Next() []interface{} {
+	if !iter.HasNext() {
+		return nil
+	}
+
 	if iter.res[0] != nil {
 		i := iter.r - 1
 		for ; i > -1; i-- {
