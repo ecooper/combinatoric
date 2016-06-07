@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestTotalProduct(t *testing.T) {
+func TestLenProduct(t *testing.T) {
 	tests := []struct {
 		n []int
 		e *big.Int
@@ -16,8 +16,8 @@ func TestTotalProduct(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if v := TotalProduct(test.n...).Int64(); v != test.e.Int64() {
-			t.Errorf("TotalProduct(%v) != %v, got %v", test.n, test.e, v)
+		if v := LenProduct(test.n...).Int64(); v != test.e.Int64() {
+			t.Errorf("LenProduct(%v) != %v, got %v", test.n, test.e, v)
 		}
 	}
 }
@@ -59,7 +59,7 @@ func BenchmarkProduct(b *testing.B) {
 		{"A", "B"},
 		{"A"},
 	}
-	results := make([][]interface{}, TotalProduct(3, 2, 1).Int64())
+	results := make([][]interface{}, LenProduct(3, 2, 1).Int64())
 
 	for i := 0; i < b.N; i++ {
 		product := Product(pools)

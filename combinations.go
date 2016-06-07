@@ -55,7 +55,11 @@ func (iter *CombinationIterator) Reset() {
 
 }
 
-func TotalCombinations(n int, r int) *big.Int {
+func (iter *CombinationIterator) Len() *big.Int {
+	return iter.max
+}
+
+func LenCombinations(n int, r int) *big.Int {
 	n64 := int64(n)
 	r64 := int64(r)
 
@@ -81,7 +85,7 @@ func Combinations(pool []interface{}, r int) *CombinationIterator {
 		n:     len(pool),
 		r:     r,
 		res:   make([]interface{}, r, r),
-		max:   TotalCombinations(len(pool), r),
+		max:   LenCombinations(len(pool), r),
 		iters: big.NewInt(0),
 	}
 

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestTotalCombinations(t *testing.T) {
+func TestLenCombinations(t *testing.T) {
 	tests := []struct {
 		n int
 		r int
@@ -18,8 +18,8 @@ func TestTotalCombinations(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if v := TotalCombinations(test.n, test.r).Int64(); v != test.e.Int64() {
-			t.Errorf("TotalCombinations(%v, %v) != %v, got %v", test.n, test.r, test.e, v)
+		if v := LenCombinations(test.n, test.r).Int64(); v != test.e.Int64() {
+			t.Errorf("LenCombinations(%v, %v) != %v, got %v", test.n, test.r, test.e, v)
 		}
 	}
 }
@@ -151,7 +151,7 @@ func TestCombinations(t *testing.T) {
 func BenchmarkCombination(b *testing.B) {
 	pool := []interface{}{"A", "B", "C", "D", "E"}
 	r := 2
-	results := make([][]interface{}, TotalCombinations(len(pool), r).Int64())
+	results := make([][]interface{}, LenCombinations(len(pool), r).Int64())
 
 	for i := 0; i < b.N; i++ {
 		combinations := Combinations(pool, r)

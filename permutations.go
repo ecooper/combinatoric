@@ -52,7 +52,7 @@ func (iter *PermutationIterator) HasNext() bool {
 
 func (iter *PermutationIterator) Reset() {
 	iter.iters = big.NewInt(0)
-	iter.max = TotalPermutations(iter.n, iter.r)
+	iter.max = iter.Len()
 
 	iter.indices = make([]int, iter.n)
 	for i := range iter.indices {
@@ -65,20 +65,11 @@ func (iter *PermutationIterator) Reset() {
 	}
 }
 
-func Permutations(pool []interface{}, r int) *PermutationIterator {
-	iter := &PermutationIterator{
-		pool: pool,
-		n:    len(pool),
-		r:    r,
-		res:  make([]interface{}, r, r),
-	}
-
-	iter.Reset()
-
-	return iter
+func (iter *PermutationIterator) Len() *big.Int {
+	return iter.max
 }
 
-func TotalPermutations(n int, r int) *big.Int {
+func LenPermutations(n int, r int) *big.Int {
 	n64 := int64(n)
 	r64 := int64(r)
 
@@ -94,4 +85,19 @@ func TotalPermutations(n int, r int) *big.Int {
 	)
 
 	return total
+}
+
+func Permutations(pool []interface{}, r int) *PermutationIterator {
+	iter := &PermutationIterator{
+		pool:  pool,
+		n:     len(pool),
+		r:     r,
+		res:   make([]interface{}, r, r),
+		iters: big.NewInt(0),
+		max:   LenPermutations(len(pool), r),
+	}
+
+	iter.Reset()
+
+	return iter
 }

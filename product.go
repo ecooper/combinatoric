@@ -43,28 +43,27 @@ func (iter *ProductIterator) HasNext() bool {
 	return iter.iters.Cmp(iter.max) == -1
 }
 
-func (iter *ProductIterator) EmptyProduct() []interface{} {
-	return make([]interface{}, iter.n, iter.n)
-}
-
-func (iter *ProductIterator) Total() *big.Int {
-	sizes := make([]int, iter.n, iter.n)
-	for i := range sizes {
-		sizes[i] = len(iter.pools[i])
-	}
-
-	return TotalProduct(sizes...)
-}
-
 func (iter *ProductIterator) Reset() {
 	iter.iters = big.NewInt(0)
-	iter.max = iter.Total()
 
 	iter.indices = make([]int, iter.n, iter.n)
 	iter.res = make([]interface{}, iter.n, iter.n)
 }
 
-func TotalProduct(pools ...int) *big.Int {
+func (iter *ProductIterator) len() *big.Int {
+	sizes := make([]int, iter.n, iter.n)
+	for i := range sizes {
+		sizes[i] = len(iter.pools[i])
+	}
+
+	return LenProduct(sizes...)
+}
+
+func (iter *ProductIterator) Len() *big.Int {
+	return iter.max
+}
+
+func LenProduct(pools ...int) *big.Int {
 	t := big.NewInt(1)
 	for i := range pools {
 		t.Mul(t, big.NewInt(int64(pools[i])))
@@ -76,7 +75,10 @@ func Product(pools [][]interface{}) *ProductIterator {
 	iter := &ProductIterator{
 		pools: pools,
 		n:     len(pools),
+		iters: big.NewInt(0),
 	}
+
+	iter.max = iter.len()
 
 	iter.Reset()
 
