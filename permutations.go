@@ -6,88 +6,76 @@ import (
 
 type PermutationIterator struct {
 	pool    []interface{}
+	n       int
 	r       int
 	cycles  []int
 	indices []int
-	started bool
+
+	max   *big.Int
+	iters *big.Int
+
+	res []interface{}
 }
 
 func (iter *PermutationIterator) Next() []interface{} {
-	n := len(iter.pool)
-
-	if iter.started == true {
+	if iter.res[0] != nil {
 		for i := iter.r - 1; i > -1; i-- {
 			iter.cycles[i] -= 1
 			if iter.cycles[i] == 0 {
-				for x := i; x < n-1; x++ {
+				for x := i; x < iter.n-1; x++ {
 					v := iter.indices[x]
 					iter.indices[x] = iter.indices[x+1]
 					iter.indices[x+1] = v
 				}
-				iter.cycles[i] = n - i
+				iter.cycles[i] = iter.n - i
 			} else {
 				x := iter.indices[i]
-				iter.indices[i] = iter.indices[n-iter.cycles[i]]
-				iter.indices[n-iter.cycles[i]] = x
+				iter.indices[i] = iter.indices[iter.n-iter.cycles[i]]
+				iter.indices[iter.n-iter.cycles[i]] = x
 				break
 			}
 		}
-	} else {
-		iter.started = true
 	}
 
-	permutation := iter.EmptyPermutation()
 	for i := 0; i < iter.r; i++ {
-		permutation[i] = iter.pool[iter.indices[i]]
+		iter.res[i] = iter.pool[iter.indices[i]]
 	}
 
-	return permutation
+	iter.iters.Add(iter.iters, bigIntIncr)
+
+	return iter.res
 }
 
 func (iter *PermutationIterator) HasNext() bool {
-	if len(iter.pool) == iter.r && iter.started {
-		return false
-	}
-
-	if iter.cycles[0] != 1 {
-		return true
-	}
-
-	cf := 0
-	for i := range iter.cycles {
-		cf += iter.cycles[i]
-	}
-
-	return cf > iter.r
-}
-
-func (iter *PermutationIterator) EmptyPermutation() []interface{} {
-	return make([]interface{}, iter.r)
+	return iter.iters.Cmp(iter.max) == -1
 }
 
 func (iter *PermutationIterator) Reset() {
-	n := len(iter.pool)
-	iter.started = false
+	iter.iters = big.NewInt(0)
+	iter.max = TotalPermutations(iter.n, iter.r)
 
-	iter.indices = make([]int, n)
+	iter.indices = make([]int, iter.n)
 	for i := range iter.indices {
 		iter.indices[i] = i
 	}
 
-	iter.cycles = make([]int, n-(n-iter.r))
+	iter.cycles = make([]int, iter.n-(iter.n-iter.r))
 	for i := range iter.cycles {
-		iter.cycles[i] = n - i
+		iter.cycles[i] = iter.n - i
 	}
 }
 
 func Permutations(pool []interface{}, r int) *PermutationIterator {
-	permutations := new(PermutationIterator)
+	iter := &PermutationIterator{
+		pool: pool,
+		n:    len(pool),
+		r:    r,
+		res:  make([]interface{}, r, r),
+	}
 
-	permutations.pool = pool
-	permutations.r = r
-	permutations.Reset()
+	iter.Reset()
 
-	return permutations
+	return iter
 }
 
 func TotalPermutations(n int, r int) *big.Int {

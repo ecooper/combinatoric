@@ -5,50 +5,50 @@ import (
 )
 
 type ProductIterator struct {
-	pools      [][]interface{}
-	indices    []int
-	current    []interface{}
-	total      int64
-	iterations int64
+	pools   [][]interface{}
+	n       int
+	indices []int
+
+	max   *big.Int
+	iters *big.Int
+
+	res []interface{}
 }
 
 func (iter *ProductIterator) Next() []interface{} {
-	product := iter.EmptyProduct()
-	copy(product, iter.current)
-
-	if iter.iterations == 0 {
-		for i := range product {
-			product[i] = iter.pools[i][0]
+	if iter.res[0] == nil {
+		for i := range iter.res {
+			iter.res[i] = iter.pools[i][0]
 		}
 	} else {
-		for i := len(product) - 1; i >= 0; i-- {
+		for i := iter.n - 1; i >= 0; i-- {
 			pool := iter.pools[i]
 			iter.indices[i] += 1
 			if iter.indices[i] == len(pool) {
 				iter.indices[i] = 0
-				product[i] = pool[0]
+				iter.res[i] = pool[0]
 			} else {
-				product[i] = pool[iter.indices[i]]
+				iter.res[i] = pool[iter.indices[i]]
 				break
 			}
 		}
 	}
 
-	iter.current = product
-	iter.iterations++
-	return product
+	iter.iters.Add(iter.iters, bigIntIncr)
+
+	return iter.res
 }
 
 func (iter *ProductIterator) HasNext() bool {
-	return iter.iterations < iter.total
+	return iter.iters.Cmp(iter.max) == -1
 }
 
 func (iter *ProductIterator) EmptyProduct() []interface{} {
-	return make([]interface{}, len(iter.pools))
+	return make([]interface{}, iter.n, iter.n)
 }
 
 func (iter *ProductIterator) Total() *big.Int {
-	sizes := make([]int, len(iter.pools))
+	sizes := make([]int, iter.n, iter.n)
 	for i := range sizes {
 		sizes[i] = len(iter.pools[i])
 	}
@@ -57,12 +57,11 @@ func (iter *ProductIterator) Total() *big.Int {
 }
 
 func (iter *ProductIterator) Reset() {
-	iter.iterations = 0
-	iter.total = iter.Total().Int64()
+	iter.iters = big.NewInt(0)
+	iter.max = iter.Total()
 
-	n := len(iter.pools)
-	iter.indices = make([]int, n)
-	iter.current = make([]interface{}, n)
+	iter.indices = make([]int, iter.n, iter.n)
+	iter.res = make([]interface{}, iter.n, iter.n)
 }
 
 func TotalProduct(pools ...int) *big.Int {
@@ -74,8 +73,12 @@ func TotalProduct(pools ...int) *big.Int {
 }
 
 func Product(pools [][]interface{}) *ProductIterator {
-	p := new(ProductIterator)
-	p.pools = pools
-	p.Reset()
-	return p
+	iter := &ProductIterator{
+		pools: pools,
+		n:     len(pools),
+	}
+
+	iter.Reset()
+
+	return iter
 }

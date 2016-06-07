@@ -5,18 +5,22 @@ import (
 )
 
 type CombinationIterator struct {
-	pool      []interface{}
-	r         int
-	indices   []int
-	completed int
-	total     int
+	pool    []interface{}
+	n       int
+	r       int
+	indices []int
+
+	max   *big.Int
+	iters *big.Int
+
+	res []interface{}
 }
 
 func (iter *CombinationIterator) Next() []interface{} {
-	if iter.completed > 0 {
+	if iter.res[0] != nil {
 		i := iter.r - 1
 		for ; i > -1; i-- {
-			if iter.indices[i] != i+len(iter.pool)-iter.r {
+			if iter.indices[i] != i+iter.n-iter.r {
 				break
 			}
 		}
@@ -25,45 +29,24 @@ func (iter *CombinationIterator) Next() []interface{} {
 			for j := i + 1; j < iter.r; j++ {
 				iter.indices[j] = iter.indices[j-1] + 1
 			}
-
-			iter.completed += 1
 		}
-	} else {
-		iter.completed = 1
 	}
 
-	combination := iter.EmptyCombination()
 	for j := 0; j < iter.r; j++ {
-		combination[j] = iter.pool[iter.indices[j]]
+		iter.res[j] = iter.pool[iter.indices[j]]
 	}
 
-	return combination
+	iter.iters.Add(iter.iters, bigIntIncr)
+
+	return iter.res
 }
 
 func (iter *CombinationIterator) HasNext() bool {
-	if iter.r > len(iter.pool) {
-		return false
-	}
-
-	return iter.completed < iter.total
-}
-
-func (iter *CombinationIterator) EmptyCombination() []interface{} {
-	return make([]interface{}, iter.r)
+	return iter.iters.Cmp(iter.max) == -1
 }
 
 func (iter *CombinationIterator) Reset() {
-	n := len(iter.pool)
-	if iter.r == n {
-		iter.total = 1
-	} else if iter.r > 1 {
-		z := n - iter.r + 1
-		iter.total = (n * z) / 2
-	} else {
-		iter.total = n
-	}
-
-	iter.completed = -1
+	iter.iters.Set(big.NewInt(0))
 
 	iter.indices = make([]int, iter.r)
 	for i := 0; i < iter.r; i++ {
@@ -93,11 +76,16 @@ func TotalCombinations(n int, r int) *big.Int {
 }
 
 func Combinations(pool []interface{}, r int) *CombinationIterator {
-	combinations := new(CombinationIterator)
+	iter := &CombinationIterator{
+		pool:  pool,
+		n:     len(pool),
+		r:     r,
+		res:   make([]interface{}, r, r),
+		max:   TotalCombinations(len(pool), r),
+		iters: big.NewInt(0),
+	}
 
-	combinations.pool = pool
-	combinations.r = r
-	combinations.Reset()
+	iter.Reset()
 
-	return combinations
+	return iter
 }
