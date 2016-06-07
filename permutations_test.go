@@ -1,7 +1,7 @@
 package combinatoric
 
 import (
-	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -157,16 +157,35 @@ func TestPermutations(t *testing.T) {
 	for _, test := range tests {
 		permutations, _ := Permutations(test.v, test.r)
 		i := 0
-		for ; permutations.HasNext(); i++ {
-			p := permutations.Next()
-			if fmt.Sprint(p) != fmt.Sprint(test.e[i]) {
+		for p := permutations.First(); p != nil; p = permutations.Next() {
+			if !reflect.DeepEqual(p, test.e[i]) {
 				t.Errorf("Got unexpected permutations, %v at %v. Expected %v", p, i, test.e[i])
 			}
+			i += 1
 		}
 
-		if int(len(test.e)) != int(i) {
-			t.Errorf("Not enough combinations: %d, expected %d", i, len(test.e))
+		if len(test.e) != i {
+			t.Errorf("Not enough permutations: %d, expected %d", i, len(test.e))
 		}
+	}
+}
+
+func TestPermutationsReset(t *testing.T) {
+	permutations, _ := Permutations([]interface{}{"A", "B", "C"}, 2)
+
+	permutations.First()
+	permutations.Reset()
+
+	if permutations.iters != 0 {
+		t.Error("iters should be zero after reset")
+	}
+
+	if !reflect.DeepEqual(permutations.indices, []int{0, 1, 2}) {
+		t.Errorf("indicies not at starting values, expected %d got %d", []int{0, 1, 2}, permutations.indices)
+	}
+
+	if !reflect.DeepEqual(permutations.cycles, []int{3, 2}) {
+		t.Errorf("cycles not at starting values, expected %d got %d", []int{2, 1}, permutations.cycles)
 	}
 }
 

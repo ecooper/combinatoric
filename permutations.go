@@ -34,6 +34,10 @@ func (iter *PermutationIterator) First() []interface{} {
 
 // Next returns the next value in the iterator or returns nil.
 func (iter *PermutationIterator) Next() []interface{} {
+	if !iter.HasNext() {
+		return nil
+	}
+
 	if iter.res[0] != nil {
 		for i := iter.r - 1; i > -1; i-- {
 			iter.cycles[i] -= 1
@@ -80,6 +84,8 @@ func (iter *PermutationIterator) Reset() {
 	for i := range iter.cycles {
 		iter.cycles[i] = iter.n - i
 	}
+
+	iter.res = make([]interface{}, iter.r, iter.r)
 }
 
 // Len returns the maximum iterations.

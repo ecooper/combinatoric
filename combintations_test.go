@@ -1,7 +1,7 @@
 package combinatoric
 
 import (
-	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -136,14 +136,29 @@ func TestCombinations(t *testing.T) {
 		i := 0
 		for ; combinations.HasNext(); i++ {
 			c := combinations.Next()
-			if fmt.Sprint(c) != fmt.Sprint(test.e[i]) {
+			if !reflect.DeepEqual(c, test.e[i]) {
 				t.Errorf("Got unexpected combination, %v at %v. Expected %v", c, i, test.e[i])
 			}
 		}
 
-		if int(len(test.e)) != int(i) {
+		if len(test.e) != i {
 			t.Errorf("Not enough combinations: %d, expected %d", i, len(test.e))
 		}
+	}
+}
+
+func TestCombinationsReset(t *testing.T) {
+	combinations, _ := Combinations([]interface{}{"A", "B", "C"}, 2)
+
+	combinations.First()
+	combinations.Reset()
+
+	if combinations.iters != 0 {
+		t.Error("iters should be zero after reset")
+	}
+
+	if !reflect.DeepEqual(combinations.indices, []int{0, 1}) {
+		t.Errorf("indicies not at starting values, expected %d got %d", []int{0, 1}, combinations.indices)
 	}
 }
 

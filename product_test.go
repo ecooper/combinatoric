@@ -1,7 +1,7 @@
 package combinatoric
 
 import (
-	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -43,12 +43,33 @@ func TestProduct(t *testing.T) {
 
 	for _, test := range tests {
 		products, _ := Product(test.v)
-		for i := 0; products.HasNext(); i++ {
-			c := products.Next()
-			if fmt.Sprint(c) != fmt.Sprint(test.e[i]) {
-				t.Errorf("Got unexpected product, %v at %v. Expected %v", c, i, test.e)
+		i := 0
+
+		for p := products.First(); p != nil; p = products.Next() {
+			if !reflect.DeepEqual(p, test.e[i]) {
+				t.Errorf("Got unexpected product, %v at %v. Expected %v", p, i, test.e)
 			}
+			i += 1
 		}
+
+		if len(test.e) != i {
+			t.Errorf("Not enough products: %d, expected %d", i, len(test.e))
+		}
+	}
+}
+
+func TestProductsReset(t *testing.T) {
+	products, _ := Product([][]interface{}{{"A", "B"}, {"C", "D"}})
+
+	products.First()
+	products.Reset()
+
+	if products.iters != 0 {
+		t.Error("iters should be zero after reset")
+	}
+
+	if !reflect.DeepEqual(products.indices, []int{0, 0}) {
+		t.Errorf("indicies not at starting values, expected %d got %d", []int{0, 0}, products.indices)
 	}
 }
 

@@ -75,6 +75,7 @@ func (iter *CombinationIterator) Reset() {
 		iter.indices[i] = i
 	}
 
+	iter.res = make([]interface{}, iter.r, iter.r)
 }
 
 // Len returns the maximum iterations.
