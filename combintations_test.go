@@ -17,8 +17,8 @@ func TestLenCombinations(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if v := LenCombinations(test.n, test.r); v != test.e {
-			t.Errorf("LenCombinations(%v, %v) != %v, got %v", test.n, test.r, test.e, v)
+		if v := lenCombinations(test.n, test.r); v != test.e {
+			t.Errorf("lenCombinations(%v, %v) != %v, got %v", test.n, test.r, test.e, v)
 		}
 	}
 }
@@ -150,7 +150,7 @@ func TestCombinations(t *testing.T) {
 func BenchmarkCombination(b *testing.B) {
 	pool := []interface{}{"A", "B", "C", "D", "E"}
 	r := 5
-	results := make([][]interface{}, LenCombinations(len(pool), r))
+	results := make([][]interface{}, lenCombinations(len(pool), r))
 
 	for i := 0; i < b.N; i++ {
 		combinations, _ := Combinations(pool, r)

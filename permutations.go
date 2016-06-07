@@ -1,9 +1,17 @@
 package combinatoric
 
 import (
+	"errors"
 	"math/big"
 )
 
+// PermutationIterator implements an Iterator to generate all
+// permutations of a given slice.
+//
+// PermutationIterator is not threadsafe, and should always be
+// initialized through Permutations. Return values from First and Next
+// share the same memory address. Use copy if the value must persist
+// between iterations.
 type PermutationIterator struct {
 	pool    []interface{}
 	n       int
@@ -17,11 +25,14 @@ type PermutationIterator struct {
 	res []interface{}
 }
 
+// First resets the iterator to its starting state and returns the first
+// permutation.
 func (iter *PermutationIterator) First() []interface{} {
 	iter.Reset()
 	return iter.Next()
 }
 
+// Next returns the next value in the iterator or returns nil.
 func (iter *PermutationIterator) Next() []interface{} {
 	if iter.res[0] != nil {
 		for i := iter.r - 1; i > -1; i-- {
@@ -51,13 +62,14 @@ func (iter *PermutationIterator) Next() []interface{} {
 	return iter.res
 }
 
+// HasNext returns true if the iterator is not yet exhausted.
 func (iter *PermutationIterator) HasNext() bool {
 	return iter.iters < iter.max
 }
 
+// Reset returns the iterator to its starting state.
 func (iter *PermutationIterator) Reset() {
 	iter.iters = 0
-	iter.max = iter.Len()
 
 	iter.indices = make([]int, iter.n)
 	for i := range iter.indices {
@@ -70,11 +82,12 @@ func (iter *PermutationIterator) Reset() {
 	}
 }
 
+// Len returns the maximum iterations.
 func (iter *PermutationIterator) Len() uint64 {
 	return iter.max
 }
 
-func LenPermutations(n int, r int) uint64 {
+func lenPermutations(n int, r int) uint64 {
 	n64 := int64(n)
 	r64 := int64(r)
 
@@ -92,11 +105,13 @@ func LenPermutations(n int, r int) uint64 {
 	return total.Uint64()
 }
 
+// Permutations creates a new PermutationIterator for a given slice and
+// desired output size.
 func Permutations(pool []interface{}, r int) (*PermutationIterator, error) {
 	n := len(pool)
 
 	if r > n {
-		return nil, IteratorResultSizeError
+		return nil, errors.New("Result size is larger than input")
 	}
 
 	iter := &PermutationIterator{
@@ -104,7 +119,7 @@ func Permutations(pool []interface{}, r int) (*PermutationIterator, error) {
 		n:    n,
 		r:    r,
 		res:  make([]interface{}, r, r),
-		max:  LenPermutations(n, r),
+		max:  lenPermutations(n, r),
 	}
 
 	iter.Reset()

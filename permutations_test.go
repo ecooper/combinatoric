@@ -17,8 +17,8 @@ func TestLenPermutations(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if v := LenPermutations(test.n, test.r); v != test.e {
-			t.Errorf("LenPermutations(%v, %v) != %v, got %v", test.n, test.r, test.e, v)
+		if v := lenPermutations(test.n, test.r); v != test.e {
+			t.Errorf("lenPermutations(%v, %v) != %v, got %v", test.n, test.r, test.e, v)
 		}
 	}
 }
@@ -173,7 +173,7 @@ func TestPermutations(t *testing.T) {
 func BenchmarkPermutation(b *testing.B) {
 	pool := []interface{}{"A", "B", "C", "D", "E"}
 	r := 5
-	results := make([][]interface{}, LenPermutations(len(pool), r))
+	results := make([][]interface{}, lenPermutations(len(pool), r))
 
 	for i := 0; i < b.N; i++ {
 		permutations, _ := Permutations(pool, r)

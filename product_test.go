@@ -15,8 +15,8 @@ func TestLenProduct(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if v := LenProduct(test.n...); v != test.e {
-			t.Errorf("LenProduct(%v) != %v, got %v", test.n, test.e, v)
+		if v := lenProduct(test.n...); v != test.e {
+			t.Errorf("lenProduct(%v) != %v, got %v", test.n, test.e, v)
 		}
 	}
 }
@@ -58,7 +58,7 @@ func BenchmarkProduct(b *testing.B) {
 		{"F", "G", "H"},
 		{"I"},
 	}
-	results := make([][]interface{}, LenProduct(5, 3, 1))
+	results := make([][]interface{}, lenProduct(5, 3, 1))
 
 	for i := 0; i < b.N; i++ {
 		product, _ := Product(pools)

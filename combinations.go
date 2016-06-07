@@ -1,9 +1,17 @@
 package combinatoric
 
 import (
+	"errors"
 	"math/big"
 )
 
+// CombinationIterator implements an Iterator to generate unique
+// combinations of a given slice.
+//
+// CombinationIterator is not threadsafe, and should always be
+// initialized through Combinations. Return values from First and Next
+// share the same memory address. Use copy if the value must persist
+// between iterations.
 type CombinationIterator struct {
 	pool    []interface{}
 	n       int
@@ -16,11 +24,14 @@ type CombinationIterator struct {
 	res []interface{}
 }
 
+// First resets the iterator to its starting state and returns the first
+// combination.
 func (iter *CombinationIterator) First() []interface{} {
 	iter.Reset()
 	return iter.Next()
 }
 
+// Next returns the next value in the iterator or returns nil.
 func (iter *CombinationIterator) Next() []interface{} {
 	if !iter.HasNext() {
 		return nil
@@ -50,10 +61,12 @@ func (iter *CombinationIterator) Next() []interface{} {
 	return iter.res
 }
 
+// HasNext returns true if the iterator is not yet exhausted.
 func (iter *CombinationIterator) HasNext() bool {
 	return iter.iters < iter.max
 }
 
+// Reset returns the iterator to its starting state.
 func (iter *CombinationIterator) Reset() {
 	iter.iters = 0
 
@@ -64,11 +77,12 @@ func (iter *CombinationIterator) Reset() {
 
 }
 
+// Len returns the maximum iterations.
 func (iter *CombinationIterator) Len() uint64 {
 	return iter.max
 }
 
-func LenCombinations(n int, r int) uint64 {
+func lenCombinations(n int, r int) uint64 {
 	n64 := int64(n)
 	r64 := int64(r)
 
@@ -88,11 +102,13 @@ func LenCombinations(n int, r int) uint64 {
 	return total.Uint64()
 }
 
+// Combinations creates a new CombinationIterator for a given slice and
+// desired output size.
 func Combinations(pool []interface{}, r int) (*CombinationIterator, error) {
 	n := len(pool)
 
 	if r > n {
-		return nil, IteratorResultSizeError
+		return nil, errors.New("Result size is larger than input")
 	}
 
 	iter := &CombinationIterator{
@@ -100,7 +116,7 @@ func Combinations(pool []interface{}, r int) (*CombinationIterator, error) {
 		n:    n,
 		r:    r,
 		res:  make([]interface{}, r, r),
-		max:  LenCombinations(n, r),
+		max:  lenCombinations(n, r),
 	}
 
 	iter.Reset()

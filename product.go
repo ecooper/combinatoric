@@ -4,6 +4,13 @@ import (
 	"math/big"
 )
 
+// ProductIterator implements an Iterator to generate the Cartesian
+// product of a slice of slices.
+//
+// ProductIterator is not threadsafe, and should always be initialized
+// through Products. Return values from First and Next share the same
+// memory address. Use copy if the value must persist between
+// iterations.
 type ProductIterator struct {
 	pools   [][]interface{}
 	n       int
@@ -15,11 +22,14 @@ type ProductIterator struct {
 	res []interface{}
 }
 
+// First resets the iterator to its starting state and returns the first
+// product.
 func (iter *ProductIterator) First() []interface{} {
 	iter.Reset()
 	return iter.Next()
 }
 
+// Next returns the next value in the iterator or returns nil.
 func (iter *ProductIterator) Next() []interface{} {
 	if !iter.HasNext() {
 		return nil
@@ -48,10 +58,12 @@ func (iter *ProductIterator) Next() []interface{} {
 	return iter.res
 }
 
+// HasNext returns true if the iterator is not yet exhausted.
 func (iter *ProductIterator) HasNext() bool {
 	return iter.iters < iter.max
 }
 
+// Reset returns the iterator to its starting state.
 func (iter *ProductIterator) Reset() {
 	iter.iters = 0
 
@@ -65,14 +77,15 @@ func (iter *ProductIterator) len() uint64 {
 		sizes[i] = len(iter.pools[i])
 	}
 
-	return LenProduct(sizes...)
+	return lenProduct(sizes...)
 }
 
+// Len returns the maximum iterations.
 func (iter *ProductIterator) Len() uint64 {
 	return iter.max
 }
 
-func LenProduct(pools ...int) uint64 {
+func lenProduct(pools ...int) uint64 {
 	t := big.NewInt(1)
 	for i := range pools {
 		t.Mul(t, big.NewInt(int64(pools[i])))
@@ -80,6 +93,8 @@ func LenProduct(pools ...int) uint64 {
 	return t.Uint64()
 }
 
+// Product creates a new ProductIterator for a given slice and
+// desired output size.
 func Product(pools [][]interface{}) (*ProductIterator, error) {
 	iter := &ProductIterator{
 		pools: pools,
