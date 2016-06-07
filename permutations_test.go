@@ -165,7 +165,7 @@ func TestPermutations(t *testing.T) {
 		}
 
 		if int(len(test.e)) != int(i) {
-			t.Errorf("Not enough combinations: %s, expected %s", i, len(test.e))
+			t.Errorf("Not enough combinations: %d, expected %d", i, len(test.e))
 		}
 	}
 }
