@@ -1,4 +1,4 @@
-// Combinatoric is a simple Go port of the "combinatoric" parts of
+// Package combinatoric is a simple Go port of the "combinatoric" parts of
 // Python's itertools--specifically, combinations, permutations, and
 // product.
 //
