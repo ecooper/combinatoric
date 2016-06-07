@@ -43,7 +43,7 @@ func TestProduct(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		products := Product(test.v)
+		products, _ := Product(test.v)
 		for i := 0; products.HasNext(); i++ {
 			c := products.Next()
 			if fmt.Sprint(c) != fmt.Sprint(test.e[i]) {
@@ -62,7 +62,7 @@ func BenchmarkProduct(b *testing.B) {
 	results := make([][]interface{}, LenProduct(3, 2, 1).Int64())
 
 	for i := 0; i < b.N; i++ {
-		product := Product(pools)
+		product, _ := Product(pools)
 		for c := 0; product.HasNext(); c++ {
 			results[c] = product.Next()
 		}

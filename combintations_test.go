@@ -133,7 +133,7 @@ func TestCombinations(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		combinations := Combinations(test.v, test.r)
+		combinations, _ := Combinations(test.v, test.r)
 		i := 0
 		for ; combinations.HasNext(); i++ {
 			c := combinations.Next()
@@ -154,7 +154,7 @@ func BenchmarkCombination(b *testing.B) {
 	results := make([][]interface{}, LenCombinations(len(pool), r).Int64())
 
 	for i := 0; i < b.N; i++ {
-		combinations := Combinations(pool, r)
+		combinations, _ := Combinations(pool, r)
 		for c := 0; combinations.HasNext(); c++ {
 			results[c] = combinations.Next()
 		}

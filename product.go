@@ -71,7 +71,7 @@ func LenProduct(pools ...int) *big.Int {
 	return t
 }
 
-func Product(pools [][]interface{}) *ProductIterator {
+func Product(pools [][]interface{}) (*ProductIterator, error) {
 	iter := &ProductIterator{
 		pools: pools,
 		n:     len(pools),
@@ -82,7 +82,7 @@ func Product(pools [][]interface{}) *ProductIterator {
 
 	iter.Reset()
 
-	return iter
+	return iter, nil
 }
 
 // Type casting to insure ProductIterator implements Iterator.

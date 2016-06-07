@@ -87,19 +87,25 @@ func LenPermutations(n int, r int) *big.Int {
 	return total
 }
 
-func Permutations(pool []interface{}, r int) *PermutationIterator {
+func Permutations(pool []interface{}, r int) (*PermutationIterator, error) {
+	n := len(pool)
+
+	if r > n {
+		return nil, IteratorResultSizeError
+	}
+
 	iter := &PermutationIterator{
 		pool:  pool,
-		n:     len(pool),
+		n:     n,
 		r:     r,
 		res:   make([]interface{}, r, r),
 		iters: big.NewInt(0),
-		max:   LenPermutations(len(pool), r),
+		max:   LenPermutations(n, r),
 	}
 
 	iter.Reset()
 
-	return iter
+	return iter, nil
 }
 
 // Type casting to insure PermutationIterator implements Iterator.

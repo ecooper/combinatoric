@@ -79,19 +79,25 @@ func LenCombinations(n int, r int) *big.Int {
 	return total
 }
 
-func Combinations(pool []interface{}, r int) *CombinationIterator {
+func Combinations(pool []interface{}, r int) (*CombinationIterator, error) {
+	n := len(pool)
+
+	if r > n {
+		return nil, IteratorResultSizeError
+	}
+
 	iter := &CombinationIterator{
 		pool:  pool,
-		n:     len(pool),
+		n:     n,
 		r:     r,
 		res:   make([]interface{}, r, r),
-		max:   LenCombinations(len(pool), r),
+		max:   LenCombinations(n, r),
 		iters: big.NewInt(0),
 	}
 
 	iter.Reset()
 
-	return iter
+	return iter, nil
 }
 
 // Type casting to insure CombinationIterator implements Iterator.

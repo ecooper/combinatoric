@@ -156,7 +156,7 @@ func TestPermutations(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		permutations := Permutations(test.v, test.r)
+		permutations, _ := Permutations(test.v, test.r)
 		i := 0
 		for ; permutations.HasNext(); i++ {
 			p := permutations.Next()
@@ -177,7 +177,7 @@ func BenchmarkPermutation(b *testing.B) {
 	results := make([][]interface{}, LenPermutations(len(pool), r).Int64())
 
 	for i := 0; i < b.N; i++ {
-		permutations := Permutations(pool, r)
+		permutations, _ := Permutations(pool, r)
 		for c := 0; permutations.HasNext(); c++ {
 			results[c] = permutations.Next()
 		}
