@@ -84,3 +84,6 @@ func Product(pools [][]interface{}) *ProductIterator {
 
 	return iter
 }
+
+// Type casting to insure ProductIterator implements Iterator.
+var _ Iterator = (*ProductIterator)(nil)

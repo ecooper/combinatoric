@@ -101,3 +101,6 @@ func Permutations(pool []interface{}, r int) *PermutationIterator {
 
 	return iter
 }
+
+// Type casting to insure PermutationIterator implements Iterator.
+var _ Iterator = (*PermutationIterator)(nil)

@@ -93,3 +93,6 @@ func Combinations(pool []interface{}, r int) *CombinationIterator {
 
 	return iter
 }
+
+// Type casting to insure CombinationIterator implements Iterator.
+var _ Iterator = (*CombinationIterator)(nil)
