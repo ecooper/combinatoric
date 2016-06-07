@@ -10,8 +10,8 @@ type CombinationIterator struct {
 	r       int
 	indices []int
 
-	max   *big.Int
-	iters *big.Int
+	max   uint64
+	iters uint64
 
 	res []interface{}
 }
@@ -36,17 +36,17 @@ func (iter *CombinationIterator) Next() []interface{} {
 		iter.res[j] = iter.pool[iter.indices[j]]
 	}
 
-	iter.iters.Add(iter.iters, bigIntIncr)
+	iter.iters += 1
 
 	return iter.res
 }
 
 func (iter *CombinationIterator) HasNext() bool {
-	return iter.iters.Cmp(iter.max) == -1
+	return iter.iters < iter.max
 }
 
 func (iter *CombinationIterator) Reset() {
-	iter.iters.Set(big.NewInt(0))
+	iter.iters = 0
 
 	iter.indices = make([]int, iter.r)
 	for i := 0; i < iter.r; i++ {
@@ -55,16 +55,16 @@ func (iter *CombinationIterator) Reset() {
 
 }
 
-func (iter *CombinationIterator) Len() *big.Int {
+func (iter *CombinationIterator) Len() uint64 {
 	return iter.max
 }
 
-func LenCombinations(n int, r int) *big.Int {
+func LenCombinations(n int, r int) uint64 {
 	n64 := int64(n)
 	r64 := int64(r)
 
 	if n < r {
-		return big.NewInt(0)
+		return 0
 	}
 
 	total := big.NewInt(0)
@@ -76,7 +76,7 @@ func LenCombinations(n int, r int) *big.Int {
 
 	total.Div(factorial(big.NewInt(n64)), total)
 
-	return total
+	return total.Uint64()
 }
 
 func Combinations(pool []interface{}, r int) (*CombinationIterator, error) {
@@ -87,12 +87,11 @@ func Combinations(pool []interface{}, r int) (*CombinationIterator, error) {
 	}
 
 	iter := &CombinationIterator{
-		pool:  pool,
-		n:     n,
-		r:     r,
-		res:   make([]interface{}, r, r),
-		max:   LenCombinations(n, r),
-		iters: big.NewInt(0),
+		pool: pool,
+		n:    n,
+		r:    r,
+		res:  make([]interface{}, r, r),
+		max:  LenCombinations(n, r),
 	}
 
 	iter.Reset()

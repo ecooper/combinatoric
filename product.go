@@ -9,8 +9,8 @@ type ProductIterator struct {
 	n       int
 	indices []int
 
-	max   *big.Int
-	iters *big.Int
+	max   uint64
+	iters uint64
 
 	res []interface{}
 }
@@ -34,23 +34,23 @@ func (iter *ProductIterator) Next() []interface{} {
 		}
 	}
 
-	iter.iters.Add(iter.iters, bigIntIncr)
+	iter.iters += 1
 
 	return iter.res
 }
 
 func (iter *ProductIterator) HasNext() bool {
-	return iter.iters.Cmp(iter.max) == -1
+	return iter.iters < iter.max
 }
 
 func (iter *ProductIterator) Reset() {
-	iter.iters = big.NewInt(0)
+	iter.iters = 0
 
 	iter.indices = make([]int, iter.n, iter.n)
 	iter.res = make([]interface{}, iter.n, iter.n)
 }
 
-func (iter *ProductIterator) len() *big.Int {
+func (iter *ProductIterator) len() uint64 {
 	sizes := make([]int, iter.n, iter.n)
 	for i := range sizes {
 		sizes[i] = len(iter.pools[i])
@@ -59,23 +59,22 @@ func (iter *ProductIterator) len() *big.Int {
 	return LenProduct(sizes...)
 }
 
-func (iter *ProductIterator) Len() *big.Int {
+func (iter *ProductIterator) Len() uint64 {
 	return iter.max
 }
 
-func LenProduct(pools ...int) *big.Int {
+func LenProduct(pools ...int) uint64 {
 	t := big.NewInt(1)
 	for i := range pools {
 		t.Mul(t, big.NewInt(int64(pools[i])))
 	}
-	return t
+	return t.Uint64()
 }
 
 func Product(pools [][]interface{}) (*ProductIterator, error) {
 	iter := &ProductIterator{
 		pools: pools,
 		n:     len(pools),
-		iters: big.NewInt(0),
 	}
 
 	iter.max = iter.len()

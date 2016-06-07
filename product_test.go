@@ -2,21 +2,20 @@ package combinatoric
 
 import (
 	"fmt"
-	"math/big"
 	"testing"
 )
 
 func TestLenProduct(t *testing.T) {
 	tests := []struct {
 		n []int
-		e *big.Int
+		e uint64
 	}{
-		{[]int{2, 2, 2}, big.NewInt(8)},
-		{[]int{2, 1, 1, 5}, big.NewInt(10)},
+		{[]int{2, 2, 2}, 8},
+		{[]int{2, 1, 1, 5}, 10},
 	}
 
 	for _, test := range tests {
-		if v := LenProduct(test.n...).Int64(); v != test.e.Int64() {
+		if v := LenProduct(test.n...); v != test.e {
 			t.Errorf("LenProduct(%v) != %v, got %v", test.n, test.e, v)
 		}
 	}
@@ -55,11 +54,11 @@ func TestProduct(t *testing.T) {
 
 func BenchmarkProduct(b *testing.B) {
 	pools := [][]interface{}{
-		{"A", "B", "C"},
-		{"A", "B"},
-		{"A"},
+		{"A", "B", "C", "D", "E"},
+		{"F", "G", "H"},
+		{"I"},
 	}
-	results := make([][]interface{}, LenProduct(3, 2, 1).Int64())
+	results := make([][]interface{}, LenProduct(5, 3, 1))
 
 	for i := 0; i < b.N; i++ {
 		product, _ := Product(pools)

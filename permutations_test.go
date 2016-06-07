@@ -2,7 +2,6 @@ package combinatoric
 
 import (
 	"fmt"
-	"math/big"
 	"testing"
 )
 
@@ -10,15 +9,15 @@ func TestLenPermutations(t *testing.T) {
 	tests := []struct {
 		n int
 		r int
-		e *big.Int
+		e uint64
 	}{
-		{5, 2, big.NewInt(20)},
-		{5, 1, big.NewInt(5)},
-		{5, 6, big.NewInt(0)},
+		{5, 2, 20},
+		{5, 1, 5},
+		{5, 6, 0},
 	}
 
 	for _, test := range tests {
-		if v := LenPermutations(test.n, test.r).Int64(); v != test.e.Int64() {
+		if v := LenPermutations(test.n, test.r); v != test.e {
 			t.Errorf("LenPermutations(%v, %v) != %v, got %v", test.n, test.r, test.e, v)
 		}
 	}
@@ -173,8 +172,8 @@ func TestPermutations(t *testing.T) {
 
 func BenchmarkPermutation(b *testing.B) {
 	pool := []interface{}{"A", "B", "C", "D", "E"}
-	r := 2
-	results := make([][]interface{}, LenPermutations(len(pool), r).Int64())
+	r := 5
+	results := make([][]interface{}, LenPermutations(len(pool), r))
 
 	for i := 0; i < b.N; i++ {
 		permutations, _ := Permutations(pool, r)

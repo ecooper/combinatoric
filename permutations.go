@@ -11,8 +11,8 @@ type PermutationIterator struct {
 	cycles  []int
 	indices []int
 
-	max   *big.Int
-	iters *big.Int
+	max   uint64
+	iters uint64
 
 	res []interface{}
 }
@@ -41,17 +41,17 @@ func (iter *PermutationIterator) Next() []interface{} {
 		iter.res[i] = iter.pool[iter.indices[i]]
 	}
 
-	iter.iters.Add(iter.iters, bigIntIncr)
+	iter.iters += 1
 
 	return iter.res
 }
 
 func (iter *PermutationIterator) HasNext() bool {
-	return iter.iters.Cmp(iter.max) == -1
+	return iter.iters < iter.max
 }
 
 func (iter *PermutationIterator) Reset() {
-	iter.iters = big.NewInt(0)
+	iter.iters = 0
 	iter.max = iter.Len()
 
 	iter.indices = make([]int, iter.n)
@@ -65,16 +65,16 @@ func (iter *PermutationIterator) Reset() {
 	}
 }
 
-func (iter *PermutationIterator) Len() *big.Int {
+func (iter *PermutationIterator) Len() uint64 {
 	return iter.max
 }
 
-func LenPermutations(n int, r int) *big.Int {
+func LenPermutations(n int, r int) uint64 {
 	n64 := int64(n)
 	r64 := int64(r)
 
 	if n < r {
-		return big.NewInt(0)
+		return 0
 	}
 
 	total := big.NewInt(0)
@@ -84,7 +84,7 @@ func LenPermutations(n int, r int) *big.Int {
 		factorial(big.NewInt(n64-r64)),
 	)
 
-	return total
+	return total.Uint64()
 }
 
 func Permutations(pool []interface{}, r int) (*PermutationIterator, error) {
@@ -95,12 +95,11 @@ func Permutations(pool []interface{}, r int) (*PermutationIterator, error) {
 	}
 
 	iter := &PermutationIterator{
-		pool:  pool,
-		n:     n,
-		r:     r,
-		res:   make([]interface{}, r, r),
-		iters: big.NewInt(0),
-		max:   LenPermutations(n, r),
+		pool: pool,
+		n:    n,
+		r:    r,
+		res:  make([]interface{}, r, r),
+		max:  LenPermutations(n, r),
 	}
 
 	iter.Reset()
